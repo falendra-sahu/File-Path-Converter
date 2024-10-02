@@ -1,0 +1,5 @@
+"homepage": "https://falendra-sahu.github.io/File-Path-Converter/",
+"scripts": {
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d build"
+}
