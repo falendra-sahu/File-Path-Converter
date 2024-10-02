@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Path Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* CSS styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom right, #e6f2ff, #e6e6ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            position: relative;
+        }
+        .card-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .card-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #3366cc;
+            margin: 0;
+        }
+        .card-description {
+            color: #666;
+            margin: 10px 0 0;
+            font-weight: 300;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: border 0.3s;
+        }
+        input:focus {
+            border-color: #3366cc;
+            outline: none;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .convert-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .convert-btn:hover {
+            background-color: #45a049;
+        }
+        .clear-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .clear-btn:hover {
+            background-color: #e53935;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 6px;
+            position: relative;
+            display: none;
+            transition: all 0.3s;
+        }
+        .output.success {
+            background-color: #e8f5e9;
+            color: #1b5e20;
+        }
+        .output.error {
+            background-color: #ffebee;
+            color: #b71c1c;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #3366cc;
+        }
+        .collapsible {
+            margin-top: 20px;
+        }
+        .collapsible-btn {
+            width: 100%;
+            text-align: left;
+            padding: 12px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .collapsible-content {
+            display: none;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 0 0 6px 6px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        @media (max-width: 600px) {
+            .button-group {
+                flex-direction: column;
+            }
+            .button-group button {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">File Path Converter</h1>
+            <p class="card-description">Convert and combine file paths easily</p>
+        </div>
+        <div class="card-content">
+            <div class="input-group">
+                <label for="mediaFullPath">Media File Path</label>
+                <input id="mediaFullPath" placeholder="e.g., /path/to/file.mp4" />
+            </div>
+            <div class="input-group">
+                <label for="zipFullPath">ZIP File Path</label>
+                <input id="zipFullPath" placeholder="e.g., /path/to/file.zip" />
+            </div>
+            <div class="input-group">
+                <label for="outputPath">Output File Name</label>
+                <input id="outputPath" placeholder="e.g., output_file" />
+            </div>
+            <div class="button-group">
+                <button class="convert-btn" onclick="convert()">Convert</button>
+                <button class="clear-btn" onclick="clearFields()">Clear</button>
+            </div>
+            <div id="output" class="output"></div>
+            <div class="collapsible">
+                <button class="collapsible-btn" onclick="toggleCollapsible()">
+                    How to Use
+                    <span style="float: right;">▼</span>
+                </button>
+                <div class="collapsible-content">
+                    <h3>Termux App Instructions:</h3>
+                    <pre>
+termux-setup-storage
+cd /storage/emulated/0/Pictures/Gallery/owner/
+cat /storage/emulated/0/Pictures/PixelPerfect/1727811885134.jpg "/storage/emulated/0/Falendra/My Love/FV.3.PVT.Photo.28.29.Sep.2024.7z" > "/storage/emulated/0/Falendra/My Love/FV.3.PVT.Photo.28.29.Sep.2024_output.jpg"
+
+# For MP4 files:
+cat "/storage/emulated/0/Falendra/Combine/lv_0_20241002021809.mp4" "/storage/emulated/0/Falendra/Combine/FV.3.PVT.28.29.Sep.2024.7z" > "/storage/emulated/0/Falendra/Combine/FV.3.PVT.28.29.Sep.2024_combined.mp4"
+                    </pre>
+                    <h3>Command Breakdown:</h3>
+                    <ol>
+                        <li><strong>cat:</strong> Yeh command files ka content dikhane aur jodne ke liye use hoti hai.</li>
+                        <li><strong>First Input:</strong> Media file path (e.g., .jpg or .mp4)</li>
+                        <li><strong>Second Input:</strong> ZIP file path (.7z file)</li>
+                        <li><strong>&gt;:</strong> Yeh symbol output ko naye file mein redirect karta hai.</li>
+                        <li><strong>Output:</strong> Combined file path</li>
+                    </ol>
+                    <h3>Example Breakdown:</h3>
+                    <ul>
+                        <li><strong>Input 1:</strong> <code>1727803655869.jpg</code> - Yeh ek image file hai.</li>
+                        <li><strong>Input 2:</strong> <code>FV.3.PVT.28.29.Sep.2024.7z</code> - Yeh ek compressed file hai (jaise zip file).</li>
+                        <li><strong>Output:</strong> <code>FV.3.PVT.28.29.Sep.2024.jpg</code> - Yeh nayi file banegi jo dono input files ka content combine karegi.</li>
+                    </ul>
+                    <p><strong>Summary:</strong> Command image file aur compressed file ka content ek nayi image file mein combine karti hai. Result ek valid image nahi bhi ho sakta, yeh depend karta hai ki contents kaise structured hain aur image viewers kaise unhe interpret karte hain.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript functionality
+        function convert() {
+            const mediaFullPath = document.getElementById('mediaFullPath').value;
+            const zipFullPath = document.getElementById('zipFullPath').value;
+            const outputPath = document.getElementById('outputPath').value;
+            const outputElement = document.getElementById('output');
+
+            if (mediaFullPath && zipFullPath && outputPath) {
+                const mediaExtension = mediaFullPath.split('.').pop();
+                const command = `cat ${mediaFullPath} "${zipFullPath}" > "${outputPath}.${mediaExtension}"`;
+                outputElement.textContent = command;
+                outputElement.className = 'output success';
+                outputElement.style.display = 'block';
+                addCopyButton(outputElement);
+            } else {
+                outputElement.textContent = 'Please fill in all fields!';
+                outputElement.className = 'output error';
+                outputElement.style.display = 'block';
+            }
+        }
+
+        function clearFields() {
+            document.getElementById('mediaFullPath').value = '';
+            document.getElementById('zipFullPath').value = '';
+            document.getElementById('outputPath').value = '';
+            document.getElementById('output').style.display = 'none';
+        }
+
+        function addCopyButton(outputElement) {
+            const existingButton = outputElement.querySelector('.copy-btn');
+            if (existingButton) existingButton.remove();
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-btn';
+            copyButton.textContent = 'Copy';
+            copyButton.onclick = function() {
+                navigator.clipboard.writeText(outputElement.textContent)
+                    .then(() => {
+                        const originalText = outputElement.textContent;
+                        outputElement.textContent = 'Command copied to clipboard!';
+                        setTimeout(() => {
+                            outputElement.textContent = originalText;
+                            addCopyButton(outputElement);
+                        }, 1000);
+                    })
+                    .catch(() => {
+                        outputElement.textContent = 'Failed to copy command.';
+                        outputElement.className = 'output error';
+                    });
+            };
+            outputElement.appendChild(copyButton);
+        }
+
+        function toggleCollapsible() {
+            const content = document.querySelector('.collapsible-content');
+            const button = document.querySelector('.collapsible-btn');
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+                button.innerHTML = 'How to Use <span style="float: right;">▼</span>';
+            } else {
+                content.style.display = 'block';
+                button.innerHTML = 'How to Use <span style="float: right;">▲</span>';
+            }
+        }
+    </script>
+</body>
+</html>
