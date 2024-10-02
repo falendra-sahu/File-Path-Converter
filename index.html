@@ -39,7 +39,8 @@
         }
         .card-description {
             color: #666;
-            margin: 10px 0 0;
+			font-size: 12px;
+            margin: 1px 0 0;
             font-weight: 300;
         }
         .input-group {
@@ -72,7 +73,7 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             transition: background 0.3s;
         }
@@ -92,6 +93,7 @@
         }
         .output {
             margin-top: 20px;
+			font-size: 14px;
             padding: 12px;
             border-radius: 6px;
             position: relative;
@@ -108,7 +110,7 @@
         }
         .copy-btn {
             position: absolute;
-            top: 8px;
+            top: 2px;
             right: 8px;
             background: none;
             border: none;
@@ -130,6 +132,7 @@
         }
         .collapsible-content {
             display: none;
+			font-size: 14px;
             padding: 15px;
             background-color: #fff;
             border: 1px solid #ddd;
@@ -160,15 +163,15 @@
         <div class="card-content">
             <div class="input-group">
                 <label for="mediaFullPath">Media File Path</label>
-                <input id="mediaFullPath" placeholder="e.g., /path/to/file.mp4" />
+                <input id="mediaFullPath" placeholder="e.g., storage/emulated/0/Pictures/Hello.mp4" />
             </div>
             <div class="input-group">
                 <label for="zipFullPath">ZIP File Path</label>
-                <input id="zipFullPath" placeholder="e.g., /path/to/file.zip" />
+                <input id="zipFullPath" placeholder="e.g., storage/emulated/0/1/King.28.29.Sep.2024.7z" />
             </div>
             <div class="input-group">
                 <label for="outputPath">Output File Name</label>
-                <input id="outputPath" placeholder="e.g., output_file" />
+                <input id="outputPath" placeholder="e.g., output_file_name" />
             </div>
             <div class="button-group">
                 <button class="convert-btn" onclick="convert()">Convert</button>
