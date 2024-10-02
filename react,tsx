@@ -1,0 +1,155 @@
+"use client"
+
+import { useState } from 'react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Copy, ChevronDown } from 'lucide-react'
+
+export default function FilePathConverter() {
+  const [mediaFullPath, setMediaFullPath] = useState('')
+  const [zipFullPath, setZipFullPath] = useState('')
+  const [outputPath, setOutputPath] = useState('')
+  const [commandOutput, setCommandOutput] = useState('')
+  const [isError, setIsError] = useState(false)
+
+  const convert = () => {
+    if (mediaFullPath && zipFullPath && outputPath) {
+      const mediaExtension = mediaFullPath.split('.').pop()
+      const command = `cat ${mediaFullPath} "${zipFullPath}" > "${outputPath}.${mediaExtension}"`
+      setCommandOutput(command)
+      setIsError(false)
+    } else {
+      setCommandOutput('Please fill in all fields!')
+      setIsError(true)
+    }
+  }
+
+  const clearFields = () => {
+    setMediaFullPath('')
+    setZipFullPath('')
+    setOutputPath('')
+    setCommandOutput('')
+    setIsError(false)
+  }
+
+  const copyCommand = () => {
+    if (commandOutput && !isError) {
+      navigator.clipboard.writeText(commandOutput)
+        .then(() => {
+          const originalCommand = commandOutput
+          setCommandOutput('Command copied to clipboard!')
+          setTimeout(() => setCommandOutput(originalCommand), 1000)
+        })
+        .catch(() => {
+          setCommandOutput('Failed to copy command.')
+          setIsError(true)
+        })
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 flex items-center justify-center p-4">
+      <Card className="w-full max-w-2xl shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center text-blue-600">File Path Converter</CardTitle>
+          <CardDescription className="text-center text-gray-600">Convert and combine file paths easily</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="mediaFullPath">Media File Path</Label>
+            <Input
+              id="mediaFullPath"
+              placeholder="e.g., /path/to/file.mp4"
+              value={mediaFullPath}
+              onChange={(e) => setMediaFullPath(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="zipFullPath">ZIP File Path</Label>
+            <Input
+              id="zipFullPath"
+              placeholder="e.g., /path/to/file.zip"
+              value={zipFullPath}
+              onChange={(e) => setZipFullPath(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="outputPath">Output File Name</Label>
+            <Input
+              id="outputPath"
+              placeholder="e.g., output_file"
+              value={outputPath}
+              onChange={(e) => setOutputPath(e.target.value)}
+            />
+          </div>
+          <div className="flex space-x-2">
+            <Button className="flex-1" onClick={convert}>Convert</Button>
+            <Button className="flex-1" variant="destructive" onClick={clearFields}>Clear</Button>
+          </div>
+          {commandOutput && (
+            <div className={`mt-4 p-3 rounded-md relative ${isError ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+              <p className="pr-8 break-all">{commandOutput}</p>
+              {!isError && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2"
+                  onClick={copyCommand}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          )}
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" className="w-full">
+                How to Use
+                <ChevronDown className="h-4 w-4 ml-2" />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2 space-y-4">
+              <Card>
+                <CardContent className="pt-4">
+                  <h3 className="font-semibold mb-2">Termux App Instructions:</h3>
+                  <pre className="bg-gray-100 p-2 rounded-md text-sm overflow-x-auto">
+                    {`termux-setup-storage
+cd /storage/emulated/0/Pictures/Gallery/owner/
+cat /storage/emulated/0/Pictures/PixelPerfect/1727811885134.jpg "/storage/emulated/0/Falendra/My Love/FV.3.PVT.Photo.28.29.Sep.2024.7z" > "/storage/emulated/0/Falendra/My Love/FV.3.PVT.Photo.28.29.Sep.2024_output.jpg"
+
+# For MP4 files:
+cat "/storage/emulated/0/Falendra/Combine/lv_0_20241002021809.mp4" "/storage/emulated/0/Falendra/Combine/FV.3.PVT.28.29.Sep.2024.7z" > "/storage/emulated/0/Falendra/Combine/FV.3.PVT.28.29.Sep.2024_combined.mp4"`}
+                  </pre>
+                  
+                  <h3 className="font-semibold mt-4 mb-2">Command Breakdown:</h3>
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li><strong>cat:</strong> Yeh command files ka content dikhane aur jodne ke liye use hoti hai.</li>
+                    <li><strong>First Input:</strong> Media file path (e.g., .jpg or .mp4)</li>
+                    <li><strong>Second Input:</strong> ZIP file path (.7z file)</li>
+                    <li><strong>&gt;:</strong> Yeh symbol output ko naye file mein redirect karta hai.</li>
+                    <li><strong>Output:</strong> Combined file path</li>
+                  </ol>
+                  
+                  <h3 className="font-semibold mt-4 mb-2">Example Breakdown:</h3>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong>Input 1:</strong> <code>1727803655869.jpg</code> - Yeh ek image file hai.</li>
+                    <li><strong>Input 2:</strong> <code>FV.3.PVT.28.29.Sep.2024.7z</code> - Yeh ek compressed file hai (jaise zip file).</li>
+                    <li><strong>Output:</strong> <code>FV.3.PVT.28.29.Sep.2024.jpg</code> - Yeh nayi file banegi jo dono input files ka content combine karegi.</li>
+                  </ul>
+                  
+                  <p className="mt-4 text-sm text-gray-600">
+                    <strong>Summary:</strong> Command image file aur compressed file ka content ek nayi image file mein combine karti hai.
+                    Result ek valid image nahi bhi ho sakta, yeh depend karta hai ki contents kaise structured hain aur image viewers kaise unhe interpret karte hain.
+                  </p>
+                </CardContent>
+              </Card>
+            </CollapsibleContent>
+          </Collapsible>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
